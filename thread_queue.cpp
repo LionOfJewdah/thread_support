@@ -67,7 +67,13 @@ int main()
         return 1;
     }
     unsigned hwc_ = std::thread::hardware_concurrency();
-    unsigned num_threads = 3*(hwc_ ? hwc_ - 1: 4);
+    unsigned num_threads = (hwc_ ? hwc_ - 1: 4);
+    /** ^ is what you should do to use the maximum number of processor cores
+    *   (the number available, minus 1 for main()).
+    *   Alternatively, below is one more for craps, giggles and serialization.
+    *   What follows would for the sake of laughs. If you want something
+    *   "reasonable" for an algorithm, keep the lines commented as is. */
+    // unsigned num_threads = 3*(hwc_ ? hwc_ - 1: 4);
     std::cout << num_threads << " threads available. (" << hwc_ << ")\n";
 
     std::deque<std::string> boatDec, keshaDec;
