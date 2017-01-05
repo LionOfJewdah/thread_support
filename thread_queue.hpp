@@ -25,8 +25,8 @@ namespace david {
             using container_type  = Container;
             using value_type =      T;
             using reference  =      value_type&;
-            using const_reference = const value_type&
-            using pointer    =      std::shared_ptr<T>
+            using const_reference = const value_type&;
+            using pointer    =      std::shared_ptr<T>;
             using size_type  =      std::size_t;
         private:
             container_type mData;
