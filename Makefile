@@ -80,6 +80,8 @@ all: $(TARGET)
 
 thread_queue.o: thread_queue.cpp structs_fwd.hpp thread_queue.hpp
 thread_stack.o: thread_stack.cpp structs_fwd.hpp thread_stack.hpp
+thread_priority_queue.o: thread_priority_queue.cpp structs_fwd.cpp \
+		thread_priority_queue.hpp
 
 solve_equations.o: solve_equations.cpp structs_fwd.hpp thread_queue.hpp
 		$(CXX) -c $(CXXFLAGS) -std=c++14 $(THREADING) $(INCPATH) -o "$@" "$<"
@@ -87,6 +89,7 @@ solve_equations.o: solve_equations.cpp structs_fwd.hpp thread_queue.hpp
 elHol_rloWrd.out: elHol_rloWrd.o $(BIN_DIR)/.dirstamp
 thread_queue.out: thread_queue.o $(BIN_DIR)/.dirstamp #$(TEXT_FILES)
 thread_stack.out: thread_stack.o $(BIN_DIR)/.dirstamp #$(TEXT_FILES)
+thread_priority_queue.out: thread_priority_queue.o $(BIN_DIR)/.dirstamp
 	$(LINK) $< $(THREADING) $(LFLAGS) $(CLARGS) -o $(BIN_DIR)/$@
 
 clean:
