@@ -30,7 +30,7 @@ namespace david {
             using size_type  =      std::size_t;
         private:
             container_type mData;
-            std::mutex mMut;
+            mutable std::mutex mMut;
             std::condition_variable mCondVar;
             //* Convenience typedefs
             using LGuard = std::lock_guard<std::mutex>;
@@ -38,14 +38,14 @@ namespace david {
             // using _share = std::make_shared<value_type>;
             // template <typename U> using _transfer = std::move_if_noexcept<U>;
         public:
-            //* Default constructor. Constructs empty queue.
+            //* Default constructor. Constructs empty thread_queue.
             thread_queue() {};
 
             /** Copy constructor. Performs deep copy, locking the other queue.
             *   @param <tq>: thread_queue to be copied from */
             thread_queue(const thread_queue& tq) {
-                LGuard lk(other.mMut);
-                mData = other.mData;
+                LGuard lk(tq.mMut);
+                mData = tq.mData;
             }
 
             //* Copy assignment is deleted.
@@ -60,7 +60,7 @@ namespace david {
             *   @param <val>: value to be pushed to the thread_queue */
             void push(value_type val) {
                 std::lock_guard<std::mutex> lk(mMut);
-                mData.push(std::move_if_noexcept(val));
+                mData.push_back(std::move_if_noexcept(val));
                 mCondVar.notify_one();
             }
 
@@ -76,7 +76,7 @@ namespace david {
                 if (mData.empty())
                     return false;
                 value = mData.front();
-                mData.pop();
+                mData.pop_front();
                 return true;
             }
 
@@ -91,7 +91,7 @@ namespace david {
                 pointer res(std::make_shared<value_type>(
                     std::move_if_noexcept(mData.front())
                 ));
-                mData.pop();
+                mData.pop_front();
                 return res;
             }
 
@@ -104,7 +104,7 @@ namespace david {
                 std::unique_lock<std::mutex> lk (mMut);
                 mCondVar.wait(lk, [this]{return !mData.empty();});
                 value = std::move_if_noexcept(mData.front());
-                mData.pop();
+                mData.pop_front();
             }
 
             /** wait_and_pop() overload returning std::shared_ptr to previous
@@ -119,7 +119,7 @@ namespace david {
                 pointer res(std::make_shared<value_type>(
                     std::move_if_noexcept(mData.front())
                 ));
-                mData.pop();
+                mData.pop_front();
                 return res;
             }
 
