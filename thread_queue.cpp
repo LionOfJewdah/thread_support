@@ -50,7 +50,6 @@ void singOutOfTune (thread_queue<std::string>* ptq) {
         }
     }
     unsigned j = 0;
-    std::cout << "\nThread " << std::this_thread::get_id()<< std::flush <<":\n";
     for (auto it = thread_lyrics.begin(), jt = it + i; it != jt; ++it, ++j) {
         std::cout << *it << ' ';
         if (j % 5 == 4) std::cout << std::endl; // << std::flush;
