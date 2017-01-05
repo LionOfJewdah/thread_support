@@ -21,11 +21,13 @@
 constexpr auto NFN = FirstNames.size() - 1, NLN = LastNames.size() - 1;
 
 using rand_short = std::uniform_int_distribution<unsigned short>;
-rand_short Randy_Marsh(13, 90), Rick_Sanchez(0, NFN), Morty_Smith(0, NLN);
 std::default_random_engine UNRG;
-auto Randy = [&](){ return Randy_Marsh (UNRG);};
-auto Rick  = [&](){ return Rick_Sanchez(UNRG);};
-auto Morty = [&](){ return Morty_Smith (UNRG);};
+rand_short Randy_Marsh(13, 90), Rick_Sanchez(0, NFN), Morty_Smith(0, NLN);
+rand_short Bojack_Horseman(128, 20000);
+auto Randy  = [&](){ return Randy_Marsh   (UNRG); };
+auto Rick   = [&](){ return Rick_Sanchez  (UNRG); };
+auto Morty  = [&](){ return Morty_Smith   (UNRG); };
+auto Bojack = [&](){ return Bojack_Horseman(UNRG);};
 
 const std::string& getFirst() { return FirstNames[Rick()]; }
 const std::string& getLast () { return LastNames [Morty()];}
@@ -82,7 +84,11 @@ int main(int argc, char* argv[])
     std::vector<std::string> outFiles = argc > 2 ? getFNames(N) : genFNames(N);
     std::vector<std::ofstream> outputs {outFiles.begin(), outFiles.end()};
     for (auto&& out : outputs) {
-
+        auto X = Bojack();
+        out << X << std::endl;
+        for (auto k = 0; k < X; ++k) {
+            writePerson(out);
+        }
     }
     return 0;
 }
