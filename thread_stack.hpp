@@ -14,7 +14,7 @@
 #include <deque>
 #include <mutex>
 #include <stdexcept>
-//#include <memory> // std::shared_ptr
+#include <memory> // std::shared_ptr
 
 namespace david {
     namespace thread {

@@ -10,6 +10,8 @@
 #ifndef structs_fwd_hpp
 #define structs_fwd_hpp
 
+#include <utility> // std::move, std::move_if_noexcept
+
 namespace david {
     namespace thread {
         template <typename T, class Container>
