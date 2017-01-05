@@ -78,8 +78,8 @@ std::map<unsigned, operation>& Equations() {
 }
 
 void add_equation(std::stringstream& ss) {
-    unsigned x;
-    ss >> x;
+    unsigned x; char c;
+    ss >> x >> c; // c absorbs the colon I added
     auto pear = std::make_pair(x, operation(ss));
     Equations().insert(pear);
 }
