@@ -62,12 +62,9 @@ namespace david {
                 mData.push_back(std::move_if_noexcept(val));
             }
 
-            /** thread_queue offers both "try_pop" and "wait_and_pop" functions,
-            *   based on what you want to do. */
-
             /** void try_pop() overload, taking @param value by
             *   reference. This value is overwritten with the previous top
-            *   value, which is removed from the queue.
+            *   value, which is removed from the stack.
             *   @throw david::thread::empty_stack exception, if the current
             *   thread_stack is empty. */
             void pop(value_type& value) {
@@ -78,9 +75,10 @@ namespace david {
             }
 
             /** try_pop() overload returning std::shared_ptr to previous top
-            *   element, which is removed from the queue.
-            *   @return: shared_ptr to value popped from queue, or the default
-            *   std::shared_ptr (nullptr) if the pop was unsuccessful */
+            *   element, which is removed from the stack.
+            *   @return: shared_ptr to value popped from stack
+            *   @throw david::thread::empty_stack exception, if the current
+            *   thread_stack is empty. */
             pointer try_pop() {
                 std::lock_guard<std::mutex> lk(mMut);
                 if (mData.empty()) throw empty_stack();
@@ -91,7 +89,7 @@ namespace david {
                 return res;
             }
 
-            /** @return: whether the current thread_queue is empty */
+            /** @return: whether the current thread_stack is empty */
             bool empty() const noexcept(
                 noexcept(declval<container_type>().empty()))
             {
