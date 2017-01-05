@@ -113,5 +113,6 @@ demonstrate: elHol_rloWrd.out
 concurrency: demonstrate
 
 Equations: generate_math.out
+	-@$(BIN_DIR)/$< $(CLARGS)
 Solve: 		 solve_equations.out $(OUT_DIR)/.dirstamp
 	-@$(BIN_DIR)/$< $(CLARGS)
