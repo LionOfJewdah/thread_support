@@ -15,7 +15,6 @@
 #include <future>
 #include <chrono>
 #include <random>
-#include <atomic>
 
 using uniform_dist  = std::uniform_real_distribution<double>; // from <random>
 using rand_int      = std::uniform_int_distribution<unsigned char>;
@@ -34,10 +33,11 @@ inline double makeRand(unsigned i = 0) {
     return (i < num_threads ? serializable[i](UNRG) : 0.0);
 } // this type is double, but I have it more generic
 
-std::atomic<unsigned> so_far_made(0);
+thread_local unsigned so_far_made = 0;
 
 void make_thread_equations(unsigned thNum, unsigned num_per_thread,
     std::ostream* po = &std::cout) {
+    so_far_made = num_per_thread*thNum;
     auto && o = *po;
     for (unsigned i = 0; i < num_per_thread; ++i) {
         std::stringstream ss;
