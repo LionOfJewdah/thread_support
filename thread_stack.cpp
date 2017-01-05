@@ -4,11 +4,20 @@
 //
 //  Created by David Paul Silverstone on Wed, Jan 4th, 2017.
 //
-//  Test of my thread_stack 
+//  Test of my thread_stack
 
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <thread>
 #include "thread_stack.hpp"
 
-thread_stack::thread_stack()  {}
-thread_stack::~thread_stack() {}
-
 using namespace david::thread;
+
+int main()
+{
+
+
+    return 0;
+}
