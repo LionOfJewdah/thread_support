@@ -57,7 +57,7 @@ first: all
 .SUFFIXES: .o .c .cpp .cc .cxx .C
 
 .cpp.o:
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o "$@" "$<"
+	$(CXX) -c $(CXXFLAGS) $(THREADING) $(INCPATH) -o "$@" "$<"
 
 .cc.o:
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o "$@" "$<"
@@ -80,7 +80,6 @@ all: $(TARGET)
 
 thread_queue.o: thread_queue.cpp structs_fwd.hpp thread_queue.hpp
 thread_stack.o: thread_stack.cpp structs_fwd.hpp thread_stack.hpp
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o "$@" "$<"
 
 elHol_rloWrd.out: elHol_rloWrd.o $(BIN_DIR)/.dirstamp
 thread_queue.out: thread_queue.o $(BIN_DIR)/.dirstamp #$(TEXT_FILES)
