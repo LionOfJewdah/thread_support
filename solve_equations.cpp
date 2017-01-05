@@ -71,13 +71,10 @@ std::map<unsigned, operation>& Equations() {
     return eqns;
 }
 
-// std::mutex map_mutex;
-
 void add_equation(std::stringstream& ss) {
     unsigned x;
     ss >> x;
     auto pear = std::make_pair(x, operation(ss));
-    // std::lock_guard<std::mutex> lk(map_mutex);
     Equations().insert(pear);
 }
 
@@ -91,7 +88,6 @@ void init_map(const std::string& inFile) {
     }
 }
 
-/* Decided against using these
 std::pair<unsigned, double> pairwise_eval(const typename
     decltype(Equations())::value_type& pear)
 {
@@ -101,30 +97,67 @@ std::pair<unsigned, double> pairwise_eval(const typename
 std::map<unsigned, double>& Solutions() {
     static std::map<unsigned, double> solns;
     return solns;
-}*/
+}
+
+std::mutex map_mutex;
+void solve(unsigned i) {
+    std::lock_guard<std::mutex> lk(map_mutex);
+    Solutions().insert(pairwise_eval(Equations()[i]));
+}
 
 void print_map(std::ostream& o = std::cout) {
+    auto&& Solved = Solutions();
     for (const auto& eq : Equations()) {
-        o << eq.first << ": " << eq.second << " = " << eq.second() << '\n';
+        o << eq.first << ": " << eq.second << " = " << Solved[eq.first] << '\n';
     }
 }
 
+unsigned hwc = std::thread::hardware_concurrency();
+unsigned num_threads = (hwc ? hwc - 1 : 3);
+
+void solve_range(unsigned i, unsigned j, unsigned lim_eqns) {
+    unsigned k = j < lim_eqns ? j : lim_eqns;
+    for (unsigned a = i; a < k; ++a) solve(a);
+}
 
 int main(int argc, char* argv[])
 {
     std::string inFile = (argc > 1 ? argv[1] : "resources/equations.txt");
     std::string outFile = (argc > 2 ? argv[2] : "output/solutions.txt");
-    try init_map(inFile);
-    catch (std::domain_error& q) {
-        std::cerr << q.what() << std::endl;
+    try { init_map(inFile); }
+    catch (std::domain_error& de) {
+        std::cerr << de.what() << std::endl;
         return -1;
     }
-
+    /*  make sure we have an output file before we do the work solving the
+    *   equations */
     std::ofstream output (outFile);
     if (!output.is_open()) {
         std::cerr << "Could not open output file.\n";
         return -2;
     }
+    // or, keep a well-defined output to cout if this ofstream doesn't work
+    // std::ostream& o = output.is_open() ? output : std::cout;
+    /* to do this, comment the `if (!output...)` block above, uncomment the line
+    *  immediately above, and also uncomment `print_map(o)` in exchange for
+    *  the line immediately below it, below. */
+
+    auto numEqns = Equations().size();
+
+    Solutions(); // make sure this map is initialized before we go
+    unsigned first = 0, per_block = numEqns/(num_threads+1);
+    unsigned block_last = per_block;
+    std::vector<std::thread> vthread; vthread.reserve(num_threads);
+    for (unsigned b = 0; b < num_threads; ++b) {
+        vthread.emplace_back(solve_range(first, block_last, numEqns));
+        first = block_last;
+        block_last += per_block;
+    }
+    solve_range(block_last, numEqns, numEqns);
+    for (auto&& th: vthread) th.join();
+
+    //print_map(o);
+    print_map(output);
 
     return 0;
 }
