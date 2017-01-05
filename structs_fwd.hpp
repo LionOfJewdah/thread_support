@@ -14,6 +14,7 @@
 
 namespace david {
     namespace thread {
+        //* Class forward declarations
         template <typename T, class Container>
         class thread_queue;
         template <typename T, class Container>
@@ -22,6 +23,16 @@ namespace david {
         class thread_list;
         template <typename T, class Container>
         class thread_forward_list;
+
+        //* non-member swap functions
+        template <typename T, class C>
+        void swap (thread_queue<T, C>& lhs, thread_queue<T, C>& rhs);
+        template <typename T, class C>
+        void swap (thread_stack<T, C>& lhs, thread_stack<T, C>& rhs);
+        template <typename T, class C>
+        void swap (thread_list<T, C>& lhs,  thread_list<T, C>& rhs);
+        template <typename T, class C>
+        void swap (thread_forward_list<T, C>& l, thread_forward_list<T, C>& rh);
     }
 }
 

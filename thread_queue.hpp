@@ -138,7 +138,32 @@ namespace david {
                 std::lock_guard<std::mutex> lk(mMut);
                 return mData.size();
             }
+
+            /** Equality comparison: @returns true iff the addresses of the
+            *   two thread_queues are the same, i.e. they refer to the same
+            *   object */
+            friend bool operator==(const thread_queue& a, const thread_queue& b)
+            {
+                return &a == &b;
+            }
+
+            /** A transactional swap member function.
+            * @param <rhs>: thread_queue to swap with *this */
+            void swap(thread_queue& rhs) {
+                if (this == &rhs) return;
+                std::lock(mMut, rhs.mMut);
+                LGuard lock_a(mMut,     std::adopt_lock);
+                LGuard lock_b(rhs.mMut, std::adopt_lock);
+                swap(mData, rhs.mData);
+            }
+
+            // friend void swap(thread_queue& lhs, thread_queue& rhs);
         };
+
+        template <typename T, class C>
+        inline void swap (thread_stack<T, C>& lhs, thread_queue<T, C>& rhs) {
+            lhs.swap(rhs);
+        }
     }
 }
 
