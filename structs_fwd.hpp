@@ -24,6 +24,8 @@ namespace david {
         class thread_list;
         template <typename T, class Container>
         class thread_forward_list;
+        template <typename T, class Container, class Compare>
+        class thread_priority_queue;
 
         //* non-member swap functions
         template <typename T, class C>
@@ -34,6 +36,9 @@ namespace david {
         void swap (thread_list<T, C>& lhs,  thread_list<T, C>& rhs);
         template <typename T, class C>
         void swap (thread_forward_list<T, C>& l, thread_forward_list<T, C>& rh);
+        template <typename T, class C, class Cm>
+        void swap (thread_priority_queue<T, C, Cm>& lhs,
+            thread_priority_queue<T, C, Cm>& rhs);
     }
 }
 
