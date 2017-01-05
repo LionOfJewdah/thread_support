@@ -9,10 +9,10 @@
 CC            = gcc
 CXX           = g++
 STD			  		= -std=c++11
+STD14		  		= -std=c++14
 CLARGS		  	=
-DEFINES       = $(CLARGS)
-CFLAGS        = -m64 -pipe -O2 -g -Wall -W $(DEFINES)
-CXXFLAGS      = -m64 -pipe -O2 $(STD) -g -Wall -W $(DEFINES)
+CFLAGS        = -m64 -pipe -O2 -g -Wall -W
+CXXFLAGS      = -m64 -pipe -O2 $(STD) -g -Wall -W
 LINK          = g++
 LFLAGS        = -m64 -Wl,-O1
 LIBS		  		= -L/usr/lib/x86_x64-linux-gnu -lpthread $(THREADING)
@@ -30,7 +30,6 @@ MOVE          = mv -f
 CHK_DIR_EXISTS= test -d
 MKDIR         = mkdir -p
 THREADING     = -pthread
-
 
 ####### Output directory
 
@@ -80,9 +79,13 @@ all: $(TARGET)
 
 thread_queue.o: thread_queue.cpp structs_fwd.hpp thread_queue.hpp
 thread_stack.o: thread_stack.cpp structs_fwd.hpp thread_stack.hpp
-thread_priority_queue.o: thread_priority_queue.cpp structs_fwd.hpp \
-		thread_priority_queue.hpp
 
+thread_priority_queue.o: STD=$(STD14)
+solve_equations.o: 			 STD=$(STD14)
+
+
+thread_priority_queue.o: thread_priority_queue.cpp structs_fwd.hpp \
+	thread_priority_queue.hpp
 solve_equations.o: solve_equations.cpp structs_fwd.hpp thread_queue.hpp
 		$(CXX) -c $(CXXFLAGS) -std=c++14 $(THREADING) $(INCPATH) -o "$@" "$<"
 
@@ -124,3 +127,5 @@ Solve: 		 solve_equations.out $(OUT_DIR)/.dirstamp
 	-@$(BIN_DIR)/$< $(CLARGS)
 People: 	 make_people.out
 	-@$(BIN_DIR)/$< $(CLARGS)
+debug_PQ:	 thread_priority_queue.out inst.out People
+	cat inst.out | gdb $<
