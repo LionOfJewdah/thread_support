@@ -27,6 +27,3 @@
 *.exe
 *.out
 *.app
-
-# Root directory dirstamp
-.dirstamp
