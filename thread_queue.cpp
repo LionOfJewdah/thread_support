@@ -81,7 +81,7 @@ int main()
         &boatDec);
 
     // do something while waiting for function to set future:
-    std::cout << "Processing file resources/row_your_boat.txt" << std::endl;
+    std::cout << "Processing file resources/hamlet.txt" << std::endl;
     while (fut1.wait_for(span)==std::future_status::timeout)
         std::cout << '.' << std::flush;
 
