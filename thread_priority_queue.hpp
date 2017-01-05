@@ -15,6 +15,8 @@
 #include <vector>
 #include <mutex>
 #include <condition_variable>
+#include <algorithm> // std::make_heap, push_heap, pop_heap
+
 #include <memory> // std::shared_ptr
 
 namespace david {
@@ -23,11 +25,12 @@ namespace david {
             typename Compare = std::less<typename Container::value_type> >
         class thread_priority_queue {
         public:
-            using value_type       = Container::value_type;
-            using reference        = Container::reference;
-            using const_reference  = Container::const_reference;
-            using size_type        = Container::size_type;
             using container_type   = Container;
+            using value_type       = T;
+            using reference        = typename Container::reference;
+            using const_reference  = typename Container::const_reference;
+            using size_type        = typename Container::size_type;
+            using pointer          = std::shared_ptr<T>;
 
         protected:
             Container mData;
@@ -39,16 +42,22 @@ namespace david {
             using ULock = std::unique_lock<std::mutex>;
 
         private:
-            using std::make_heap;
-            using std::push_heap;
-            using std::pop_heap;
             /** Private pop member function. Requires mutex to be locked.
             *   Removes the top element of the priority queue, and internally
-            *   sorts according to comp.
+            *   sorts according to comp to preserve invariants.
             *   Called by all the public thread-safe pop function variants. */
             void pop() {
                 std::pop_heap(mData.begin(), mData.end(), comp);
                 mData.pop_back();
+            }
+
+            /** Private push_sort member function. Requires mutex to be locked.
+            *   After adding an element to the priority queue, internally
+            *   sorts according to comp to preserve invariants.
+            *   Called by all the public thread-safe push function variants. */
+            void push_sort() {
+                std::push_heap(mData.begin(), mData.end(), comp);
+                mCondVar.notify_one();
             }
 
         public:
@@ -61,7 +70,7 @@ namespace david {
             { std::make_heap(mData.begin(), mData.end(), comp); }
 
             explicit
-            thread_priority_queue(const Compare& __x = _Compare(),
+            thread_priority_queue(const Compare& __x = Compare(),
       		     Container&& __c = Container())
             : mData(std::move(__c)), comp(__x)
             { std::make_heap(mData.begin(), mData.end(), comp); }
@@ -86,16 +95,16 @@ namespace david {
             : mData(__c), comp(__x)
             {
                 mData.insert(mData.end(), __first, __last);
-                make_heap(mData.begin(), mData.end(), comp);
+                std::make_heap(mData.begin(), mData.end(), comp);
             }
 
             template<typename InputIterator>
-            priority_queue(InputIterator __first, InputIterator __last,
+            thread_priority_queue(InputIterator __first, InputIterator __last,
                  const Compare& __x = Compare(), Container&& __c = Container())
             : mData(std::move(__c)), comp(__x)
             {
                 mData.insert(mData.end(), __first, __last);
-                make_heap(mData.begin(), mData.end(), comp);
+                std::make_heap(mData.begin(), mData.end(), comp);
             }
             /** @return: whether the current thread_queue is empty */
             bool empty() const noexcept(
@@ -124,15 +133,13 @@ namespace david {
             void push(const value_type& __x) {
                 std::lock_guard<std::mutex> lk(mMut);
                 mData.push_back(__x);
-                push_heap(mData.begin(), mData.end(), comp);
-                mCondVar.notify_one();
+                push_sort();
             }
 
             void push(value_type&& __x) {
                 LGuard lk(mMut);
                 mData.push_back(std::move(__x));
-                push_heap(mData.begin(), mData.end(), comp);
-                mCondVar.notify_one();
+                push_sort();
             }
 
             /** Emplacement function.
@@ -142,8 +149,7 @@ namespace david {
             void emplace(Args&&... args) {
                 LGuard lk(mMut);
                 mData.emplace_back(std::forward<Args>(args)...);
-                push_heap(mData.begin(), mData.end(), comp);
-                mCondVar.notify_one();
+                push_sort();
             }
 
             /** thread_priority_queue offers "try_pop" and "wait_and_pop"
