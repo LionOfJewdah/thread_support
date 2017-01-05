@@ -18,7 +18,7 @@
 #include "resources/names_f.txt"
 #include "resources/names_l.txt"
 
-constexpr auto NFN = FirstNames.size() - 1, NLN = LastNames.size() - 1;
+const auto NFN = FirstNames.size() - 1, NLN = LastNames.size() - 1;
 
 using rand_short = std::uniform_int_distribution<unsigned short>;
 std::default_random_engine UNRG;
@@ -38,14 +38,14 @@ void writePerson(std::ostream& o = std::cout) {
 
 inline void argError() {
     std::cerr << "Usage: make_people <N> {files}\n"
-        << "<N> is a positive number of files to generate people in.\n";
-        << "{files} is either empty or a list of N output file names.\n";
+        << "<N> is a positive number of files to generate people in.\n"
+        << "{files} is either empty or a list of N output file names.\n"
         << "If it is empty, files will be output/people{1..N}.txt\n";
 }
 
 std::string fileName() {
-    static unsigned XXX = 1;
-    return std::string("output/people" + std::string::to_string(XXX) + ".txt");
+    static unsigned _xxx = 1;
+    return std::string("output/people" + std::to_string(_xxx++) + ".txt");
 }
 
 std::vector<std::string>& genFNames(unsigned n = 1) {
@@ -58,7 +58,7 @@ std::vector<std::string>& genFNames(unsigned n = 1) {
     return vec;
 }
 
-std::vector<std::string>& getFNames(unsigned n = 1) {
+std::vector<std::string>& getFNames(char** argv, unsigned n = 1) {
     static bool made = false;
     static std::vector<std::string> vec{n};
     static auto i = 0;
@@ -69,6 +69,9 @@ std::vector<std::string>& getFNames(unsigned n = 1) {
     return vec;
 }
 
+template <typename T>
+inline std::size_t _s_int(T* pT) { return reinterpret_cast<std::size_t>(pT);}
+
 int main(int argc, char* argv[])
 {
     if (argc < 2) {
@@ -78,10 +81,15 @@ int main(int argc, char* argv[])
     if (N < 1) {
         argError(); return 2;
     }
+    if (argc > 2) { // make random seeds from file names of input arguments
+        std::seed_seq seedy {_s_int(&argv[1]), _s_int(&argv[N])};
+        UNRG.seed(seedy);
+    }
     /* I must have expressions of the same data type (vector::string::iterator)
     *  for the ternary operator that follows. So I construct a vector either
     *  from N calls to fileName(), or argv[2..N+1]. */
-    std::vector<std::string> outFiles = argc > 2 ? getFNames(N) : genFNames(N);
+    auto&& a = argv;
+    std::vector<std::string> outFiles= argc > 2 ? getFNames(a,N) : genFNames(N);
     std::vector<std::ofstream> outputs {outFiles.begin(), outFiles.end()};
     for (auto&& out : outputs) {
         auto X = Bojack();
