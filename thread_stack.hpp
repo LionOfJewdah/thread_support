@@ -105,6 +105,15 @@ namespace david {
                 return mData.size();
             }
 
+            /** Emplacement function.
+            *   @param <__args...>: parameter pack to forward to underlying
+            *   container for back-emplacement */
+            template<typename... _Args>
+            void emplace(_Args&&... __args) {
+                std::unique_lock<std::mutex> lk (mMut);
+                mData.emplace_back(std::forward<_Args>(__args)...);
+            }
+
             /** Equality comparison: @returns true iff the addresses of the
             *   two thread_stacks are the same, i.e. they refer to the same
             *   object */
