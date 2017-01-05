@@ -80,7 +80,7 @@ all: $(TARGET)
 
 thread_queue.o: thread_queue.cpp structs_fwd.hpp thread_queue.hpp
 thread_stack.o: thread_stack.cpp structs_fwd.hpp thread_stack.hpp
-thread_priority_queue.o: thread_priority_queue.cpp structs_fwd.cpp \
+thread_priority_queue.o: thread_priority_queue.cpp structs_fwd.hpp \
 		thread_priority_queue.hpp
 
 solve_equations.o: solve_equations.cpp structs_fwd.hpp thread_queue.hpp
