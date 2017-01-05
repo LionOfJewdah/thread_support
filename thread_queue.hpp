@@ -71,7 +71,7 @@ namespace david {
             }
 
             /** thread_queue offers both "try_pop" and "wait_and_pop" functions,
-            *   based on what you want to do. */
+            *   as well as "wait_for_and_pop", based on what you want to do. */
 
             /** try_pop() overload returning bool, taking @param value by
             *   reference. This value is overwritten with the previous top
@@ -216,7 +216,7 @@ namespace david {
         };
 
         template <typename T, class C>
-        inline void swap (thread_stack<T, C>& lhs, thread_queue<T, C>& rhs) {
+        inline void swap (thread_queue<T, C>& lhs, thread_queue<T, C>& rhs) {
             lhs.swap(rhs);
         }
     }

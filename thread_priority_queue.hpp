@@ -42,6 +42,14 @@ namespace david {
             using std::make_heap;
             using std::push_heap;
             using std::pop_heap;
+            /** Private pop member function. Requires mutex to be locked.
+            *   Removes the top element of the priority queue, and internally
+            *   sorts according to comp.
+            *   Called by all the public thread-safe pop function variants. */
+            void pop() {
+                std::pop_heap(mData.begin(), mData.end(), comp);
+                mData.pop_back();
+            }
 
         public:
             /**
@@ -138,9 +146,124 @@ namespace david {
                 mCondVar.notify_one();
             }
 
-            
+            /** thread_priority_queue offers "try_pop" and "wait_and_pop"
+            *   functions, as well as "wait_for_and_pop",
+            *   based on what you want to do. */
+
+            /** try_pop() overload returning bool, taking @param value by
+            *   reference. This value is overwritten with the previous top
+            *   value, which is removed from the queue.
+            *   @return: whether a value was successfully popped*/
+            bool try_pop(value_type& value) {
+                LGuard lk(mMut);
+                if (mData.empty())
+                    return false;
+                value = mData.front();
+                pop();
+                return true;
+            }
+
+            /** try_pop() overload returning std::shared_ptr to previous top
+            *   element, which is removed from the queue.
+            *   @return: shared_ptr to value popped from queue, or the default
+            *   std::shared_ptr (nullptr) if the pop was unsuccessful */
+            pointer try_pop() {
+                LGuard lk(mMut);
+                if (mData.empty())
+                    return pointer();
+                pointer res(std::make_shared<value_type>(
+                    std::move_if_noexcept(mData.front())
+                ));
+                pop();
+                return res;
+            }
+
+            /** void wait_and_pop() overload, taking parameter by reference.
+            *   Waits until the thread can acquire a lock on the mutex, then
+            *   pops from the queue.
+            *   @param value is overwritten with the previous top
+            *   value, which is removed from the queue. */
+            void wait_and_pop(T& value) {
+                std::unique_lock<std::mutex> lk (mMut);
+                mCondVar.wait(lk, [this]{return !mData.empty();});
+                value = std::move_if_noexcept(mData.front());
+                pop();
+            }
+
+            /** wait_and_pop() overload returning std::shared_ptr to previous
+            *   top element, which is removed from the queue.
+            *   Waits until the thread can acquire a lock on the mutex, then
+            *   pops from the queue.
+            *   @return: shared_ptr to value popped from queue, or the default
+            *   std::shared_ptr (nullptr) if the pop was unsuccessful */
+            pointer wait_and_pop() {
+                std::unique_lock<std::mutex> lk (mMut);
+                mCondVar.wait(lk, [this]{return !mData.empty();});
+                pointer res(std::make_shared<value_type>(
+                    std::move_if_noexcept(mData.front())
+                ));
+                pop();
+                return res;
+            }
+
+            /** bool wait_for_and_pop() overload, taking parameter by reference.
+            *   Waits until the thread can acquire a lock on the mutex, then
+            *   pops from the queue.
+            *   @param value is overwritten with the previous top
+            *   value, which is removed from the queue.
+            *   @param d: duration to wait for.
+            *   @return whether a thing was popped.*/
+            template <typename Rep, class Period = std::ratio<1> >
+            bool wait_for_and_pop(T& value,
+                const std::chrono::duration<Rep, Period>& d)
+            {
+                std::unique_lock<std::mutex> lk (mMut);
+                bool b=mCondVar.wait_for(lk, d, [this]{return !mData.empty();});
+                if (!b) return false;
+                value = std::move_if_noexcept(mData.front());
+                pop();
+                return true;
+            }
+
+            /** wait_for_and_pop() overload, returning std::shared_ptr to
+            *   previous top element, which is removed from the queue.
+            *   Waits until the thread can acquire a lock on the mutex, then
+            *   pops from the queue.
+            *   @param d: duration to wait for.
+            *   @return: shared_ptr to value popped from queue, or the default
+            *   std::shared_ptr (nullptr) if the pop was unsuccessful */
+            template <typename Rep, class Period = std::ratio<1> >
+            pointer wait_for_and_pop(const std::chrono::duration<Rep, Period>&d)
+            {
+                std::unique_lock<std::mutex> lk (mMut);
+                bool b=mCondVar.wait_for(lk, d, [this]{return !mData.empty();});
+                if (!b) return pointer();
+                pointer res(std::make_shared<value_type>(
+                    std::move_if_noexcept(mData.front())
+                ));
+                pop();
+                return res;
+            }
+
+            /** A transactional swap member function.
+            * @param <rhs>: thread_priority_queue to swap with *this */
+            void swap(thread_priority_queue& rhs) {
+                if (this == &rhs) return;
+                std::lock(mMut, rhs.mMut);
+                using std::swap;
+                LGuard lock_a(mMut,     std::adopt_lock);
+                LGuard lock_b(rhs.mMut, std::adopt_lock);
+                swap(mData, rhs.mData);
+                swap(comp,  rhs.comp);
+            }
 
         };
+
+        template <typename T, class C, class Cm>
+        inline void swap (thread_priority_queue<T, C, Cm>& lhs,
+            thread_priority_queue<T, C, Cm>& rhs) {
+            lhs.swap(rhs);
+        }
     }
 }
 
