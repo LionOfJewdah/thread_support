@@ -148,13 +148,33 @@ namespace david {
                 return true;
             }
 
-            /** Emplacement function.
-            *   @param <__args...>: parameter pack to forward to underlying
-            *   container for back-emplacement */
-            template<typename... _Args>
-            void emplace(_Args&&... __args) {
+            /** wait_for_and_pop() overload, returning std::shared_ptr to
+            *   previous top element, which is removed from the queue.
+            *   Waits until the thread can acquire a lock on the mutex, then
+            *   pops from the queue.
+            *   @param d: duration to wait for.
+            *   @return: shared_ptr to value popped from queue, or the default
+            *   std::shared_ptr (nullptr) if the pop was unsuccessful */
+            template <typename Rep, class Period = std::ratio<1> >
+            pointer wait_for_and_pop(const std::chrono::duration<Rep, Period>&d)
+            {
                 std::unique_lock<std::mutex> lk (mMut);
-                mData.emplace_back(std::forward<_Args>(__args)...);
+                bool b=mCondVar.wait_for(lk, d, [this]{return !mData.empty();});
+                if (!b) return pointer();
+                pointer res(std::make_shared<value_type>(
+                    std::move_if_noexcept(mData.front())
+                ));
+                mData.pop_front();
+                return res;
+            }
+
+            /** Emplacement function.
+            *   @param <args...>: parameter pack to forward to underlying
+            *   container for back-emplacement */
+            template<typename... Args>
+            void emplace(Args&&... args) {
+                std::unique_lock<std::mutex> lk (mMut);
+                mData.emplace_back(std::forward<Args>(args)...);
                 mCondVar.notify_one();
             }
 
