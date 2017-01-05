@@ -104,9 +104,8 @@ std::map<unsigned, double>& Solutions() {
 }*/
 
 void print_map(std::ostream& o = std::cout) {
-    for (const auto& thing : Equations()) {
-        auto eqnum = thing.first;
-        o << eqnum << ": " << thing.second << " = " << Solutions[eqnum] << '\n';
+    for (const auto& eq : Equations()) {
+        o << eq.first << ": " << eq.second << " = " << eq.second() << '\n';
     }
 }
 
@@ -126,8 +125,6 @@ int main(int argc, char* argv[])
         std::cerr << "Could not open output file.\n";
         return -2;
     }
-
-    //* Invariant: not removing anything from the map Equations().
 
     return 0;
 }
