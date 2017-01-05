@@ -96,6 +96,14 @@ namespace david {
                 std::lock_guard<std::mutex> lk(mMut);
                 return mData.empty();
             }
+
+            /** @return: number of elements in the thread_stack */
+            size_type size() const noexcept(
+                noexcept(declval<container_type>().size()))
+            {
+                std::lock_guard<std::mutex> lk(mMut);
+                return mData.size();
+            }
         };
     }
 }
