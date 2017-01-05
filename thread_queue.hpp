@@ -35,8 +35,8 @@ namespace david {
             //* Convenience typedefs
             using LGuard = std::lock_guard<std::mutex>;
             using ULock = std::unique_lock<std::mutex>;
-            using _share = std::make_shared<value_type>;
-            template <typename U> using _transfer = std::move_if_noexcept<U>;
+            // using _share = std::make_shared<value_type>;
+            // template <typename U> using _transfer = std::move_if_noexcept<U>;
         public:
             //* Default constructor. Constructs empty queue.
             thread_queue() {};
@@ -71,13 +71,29 @@ namespace david {
             *   reference. This value is overwritten with the previous top
             *   value, which is removed from the queue.
             *   @return: whether a value was successfully popped*/
-            bool try_pop(value_type& value);
+            bool try_pop(value_type& value) {
+                LGuard lk(mMut);
+                if (mData.empty())
+                    return false;
+                value = mData.front();
+                mData.pop();
+                return true;
+            }
 
             /** try_pop() overload returning std::shared_ptr to previous top
             *   element, which is removed from the queue.
             *   @return: shared_ptr to value popped from queue, or the default
             *   std::shared_ptr (nullptr) if the pop was unsuccessful */
-            pointer try_pop();
+            pointer try_pop() {
+                LGuard lk(mMut);
+                if (mData.empty())
+                    return pointer {};
+                pointer res(std::make_shared<value_type>(
+                    std::move_if_noexcept(mData.front())
+                ));
+                mData.pop();
+                return res;
+            }
 
             /** void wait_and_pop() overload, taking parameter by reference.
             *   Waits until the thread can acquire a lock on the mutex, then
@@ -88,7 +104,7 @@ namespace david {
                 std::unique_lock<std::mutex> lk (mMut);
                 mCondVar.wait(lk, [this]{return !mData.empty();});
                 value = std::move_if_noexcept(mData.front());
-                data_queue.pop();
+                mData.pop();
             }
 
             /** wait_and_pop() overload returning std::shared_ptr to previous
@@ -100,10 +116,10 @@ namespace david {
             pointer wait_and_pop() {
                 std::unique_lock<std::mutex> lk (mMut);
                 mCondVar.wait(lk, [this]{return !mData.empty();});
-                pointer res(_share(
+                pointer res(std::make_shared<value_type>(
                     std::move_if_noexcept(mData.front())
                 ));
-                data_queue.pop();
+                mData.pop();
                 return res;
             }
 
