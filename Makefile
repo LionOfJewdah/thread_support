@@ -111,3 +111,7 @@ demonstrate: elHol_rloWrd.out
 	done
 
 concurrency: demonstrate
+
+Equations: generate_math.out
+Solve: 		 solve_equations.out $(OUT_DIR)/.dirstamp
+	-@$(BIN_DIR)/$< $(CLARGS)
