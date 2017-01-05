@@ -18,6 +18,9 @@
 
 namespace david {
     namespace thread {
+        /* template template parameter:
+        template <typename T, template<> class Container<T> = std::deque<T> >
+        */
         template <typename T, class Container = std::deque<T> >
         class thread_queue {
         //* public member type aliases
@@ -47,6 +50,12 @@ namespace david {
                 LGuard lk(tq.mMut);
                 mData = tq.mData;
             }
+
+            /** Constructor adapting an rvalue reference to container_type,
+            *   using it as the thread_queue's underlying container.
+            *   @param <C>: the Container to become the basis of this
+            *   thread_queue object */
+            explicit thread_queue(container_type&& C) : mData(std::move(C)) {};
 
             //* Copy assignment is deleted.
             thread_queue& operator=(const thread_queue& tq) = delete;
@@ -121,6 +130,25 @@ namespace david {
                 ));
                 mData.pop_front();
                 return res;
+            }
+
+            /** bool wait_for_and_pop() overload, taking parameter by reference.
+            *   Waits until the thread can acquire a lock on the mutex, then
+            *   pops from the queue.
+            *   @param value is overwritten with the previous top
+            *   value, which is removed from the queue.
+            *   @param d: duration to wait for.
+            *   @return whether a thing was popped.*/
+            template <typename Rep, class Period = std::ratio<1> >
+            bool wait_for_and_pop(T& value,
+                const std::chrono::duration<Rep, Period>& d)
+            {
+                std::unique_lock<std::mutex> lk (mMut);
+                bool b=mCondVar.wait_for(lk, d, [this]{return !mData.empty();});
+                if (!b) return false;
+                value = std::move_if_noexcept(mData.front());
+                mData.pop_front();
+                return true;
             }
 
             /** Emplacement function.
