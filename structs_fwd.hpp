@@ -13,6 +13,7 @@
 #include <utility> // std::move, std::move_if_noexcept
 
 namespace david {
+    using std::declval;
     namespace thread {
         //* Class forward declarations
         template <typename T, class Container>
