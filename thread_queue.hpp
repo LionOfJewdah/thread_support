@@ -18,9 +18,6 @@
 
 namespace david {
     namespace thread {
-        /* template template parameter:
-        template <typename T, template<> class Container<T> = std::deque<T> >
-        */
         template <typename T, class Container = std::deque<T> >
         class thread_queue {
         //* public member type aliases
