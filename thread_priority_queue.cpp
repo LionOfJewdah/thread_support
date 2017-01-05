@@ -5,10 +5,10 @@
 //  Created by David Paul Silverstone on Thu, Jan 5th, 2017.
 //
 //  Test of my thread_priority_queue, using Dijkstra's algorithm
-//  Use argv[1] as the name of the output file (effectively sorting by age
+//  Use argv[2] as the name of the output file (effectively sorting by age
 //  highest to lowest, as they come in).
-//  Use argv[2] as an integer representing the number of input files (up to 31).
-//  Let N = argv[2]. Then argv[3..N+2] are the names of files to read from.
+//  Use argv[1] as an integer representing the number of input files (up to 31).
+//  Let N = argv[1]. Then argv[3..N+2] are the names of files to read from.
 //  Input files must have be in the format:
 //  First line is a non-negative integer X declaring the number of Persons to be
 //  described in the file.
@@ -22,52 +22,72 @@
 #include <thread>
 #include <future>
 #include <chrono>
+#include <algorithm>
 #include "thread_priority_queue.hpp"
 
 using namespace std::rel_ops; // give me a <=, >, >=, !=, etc., based on <
 using namespace david::thread;
 
+typedef unsigned short ushort;
+typedef unsigned char  uchar;  // for laziness
+
 struct Person
 {
+    struct Age {
+        unsigned short years;
+        unsigned char  months, days;
+        Age(ushort y, uchar m = 0, uchar d = 0): years(y), months(m), days(d) {}
+    } age;
     std::string name;
-    int age;
-    Person(std::istream& is) {
-        is >> p.age;
-        is.ignore(); // ignore white space
-        is >> p.name;
-    }
+    Person() : age(0) {};
     template <typename stringTp>
-    Person(int a, stringTp&& n) : age(a), name(std::forward<stringTp>(n)) {};
+    Person(ushort y, uchar m, uchar d, stringTp&& n)
+    : age(y, m, d), name(std::forward<stringTp>(n)) {};
+};
+
+inline bool operator==(const struct Person::Age&a, const struct Person::Age&b) {
+    return a.years == b.years && a.months == b.months && a.days == b.days;
+};
+
+inline bool operator<(const struct Person::Age& a, const struct Person::Age& b){
+    return a.years < b.years || (a.years == b.years && a.months < b.months)
+        ||  (a.years == b.years && a.months == b.months && a.days < b.days);
 };
 
 inline
-bool operator< (const Person& a, const Person& b) { return a.age < b.age; }
+bool operator< (const Person& a, const Person& b) { return a.age < b.age; };
 
 inline bool operator==(const Person& a, const Person& b) {
     return a.name == b.name && a.age == b.age;
-}
+};
+
+inline std::ostream& operator<< (std::ostream& o, const struct Person::Age& a) {
+    o << a.years << ' ' << ushort(a.months) << ' ' << ushort(a.days);
+    return o;
+};
 
 inline std::ostream& operator<< (std::ostream& o, const Person& p) {
-    o << p.name << "; " << p.age << std::endl;
+    o << p.name << ";\t" << p.age;
     return o;
 }
 
 thread_priority_queue<Person> People_Queue;
 
-bool read_n_people(std::istream* piss) {
-    read_n_people(*ifs);
-    return true;
-}
-
 inline void read_n_people(std::istream& ifs) {
-    int N, x = 0; ifs >> N;
-    std::string curr, name;
-    int age;
+    int N, x = 0;
+    ifs >> N;
+    std::string curr, name, name2;
+    unsigned short age, mo, dy;
     while (std::getline(ifs, curr) && x < N) {
         std::stringstream ss(curr);
-        ss >> age >> name;
-        People_Queue.emplace(age, std::move(name));
+        ss >> age >> mo >> dy >> name >> name2;
+        People_Queue.emplace(age, mo, dy, std::move(name + " " + name2));
     }
+}
+
+bool pread_n_people(std::istream* piss) {
+    read_n_people(*piss);
+    return true;
 }
 
 inline void error() {
@@ -84,34 +104,38 @@ int main(int argc, char* argv[])
         error();
         return 1;
     }
-    unsigned int N = std::atoi(argv[2]);
+    unsigned int N = std::atoi(argv[1]);
     if (N < 1) {
         error();
         return 2;
     }
     std::vector<std::ifstream> files (&argv[3], &argv[N + 2]);
     std::vector<std::future<bool> > inputs (N);
-    for (auto x = 0; x < N; ++x) {
-        inputs[x] = std::async(std::launch::async,read_n_people, &files[x]);
+    for (unsigned x = 0; x < N; ++x) {
+        inputs[x] = std::async(std::launch::async,pread_n_people, &files[x]);
     }
-    std::ofstream output(argv[1]);
+    std::ofstream output(argv[2]);
     // begin processing the priority queue in the main thread
     bool done = false, got = false;
     unsigned waitedFor = 0;
     Person p;
     while (!done) {
-        got = People_Queue.wait_for_and_pop();
-        done = std::for_all(inputs.begin(), inputs.end(), [](auto&& x) {
+        got = People_Queue.wait_for_and_pop(p, std::chrono::milliseconds(10));
+        done = std::all_of(inputs.begin(), inputs.end(), [](auto&& x) {
             return x.wait_for(std::chrono::microseconds(50)) //might be too much
-                    == std::future_status::ready);
+                    == std::future_status::ready;
         });
         if (got) {
             output << p << std::endl;
             waitedFor = 0;
         } else {
-            if (++waitedFor > 10) done = true;
+            if (++waitedFor > 10) {
+                done = true;
+                std::cout << "Exited due to timeout.\n";
+            }
         }
     }
-    for (auto&& th: inputs) th.join();
+    // for (auto&& th: inputs) th.join();
+    std::cout << "Exiting." << std::endl;
     return 0;
 }

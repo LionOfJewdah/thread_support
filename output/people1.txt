@@ -1,129 +1,129 @@
 128
-48	Lillian Watson
-16	Eileen Campbell
-85	Marie Peterson
-77	David Weaver
-54	Aubrey Hudson
-42	Lila Gonzales
-66	Wanda Wheeler
-79	Eliana Butler
-64	Zachary Jenkins
-84	Eugene Stewart
-16	Darrin Cooper
-62	Calvin Harris
-41	Pamala Bailey
-69	Lindsay Franklin
-18	Richard Morris
-34	Jeni Green
-50	Walter Wood
-41	Lindsey Willis
-83	Ashley Campbell
-83	Terrell Browne
-37	David Taylor
-33	Charles Mabry
-18	Jenifer Medina
-34	Bobby Hall
-49	Margaret Hutchings
-72	Laurence Arevalo
-22	Maddie Price
-80	Donald Harris
-69	Susan Green
-31	Val Pibbles
-53	Rafael Ingram
-45	Wilmer Butler
-45	Salvador Barlow
-35	Sharon Johnson
-57	Nicholas Hunt
-54	Dexter Yoon
-71	Aida Thompson
-61	Val Washington
-29	Cecil Barlow
-20	Casey Flores
-45	Lucia Kelley
-86	Laura Fleming
-37	Natalie Willis
-24	Cheryl Duong
-43	Bobby Lee
-58	Mary Thompson
-87	Aaron Maier
-89	Erica Lewis
-57	Terence Coleman
-49	Kathy Holland
-28	Norman Shuman
-22	Ryan Drake
-75	Raymond Allen
-43	Andrew Franklin
-83	Heidi Neal
-86	Terence White
-82	Casey Coleman
-18	Wayne Paul
-23	Hugh Webb
-40	Willie Bell
-85	Germaine Garcia
-66	Annie Allen
-80	Ella Browne
-59	Alan Gonzalez
-49	Lillian Hindman
-47	Christopher Brockman
-67	Donald Pulliam
-79	Aida Mabry
-53	Annie Baldwin
-57	Denise Hines
-69	Sarah Aaron
-75	Wayne Bowling
-14	Martin Evans
-49	Jane Duong
-51	Wayne Wheeler
-28	Helen Wright
-82	Shanelle Olvera
-48	Diane Brown
-47	Annie Fortune
-81	Jonathan Simpson
-75	Sharon Wood
-90	Andres Webb
-61	Ryan Sherman
-73	Lucia Buchanan
-45	Ramiro Anderson
-29	Helen Lee
-77	Laura Porterfield
-72	Timmy Paul
-29	Annie Green
-87	Carl Evans
-33	Carl Horan
-73	Natasha James
-35	Amanda Bell
-27	Valerie George
-76	Grace Whitworth
-59	Patti Wilkins
-25	Shani Hunt
-31	Anna Mabry
-62	Eileen Hines
-67	Brian Hernandez
-62	Karen Morris
-30	Janet Lamb
-22	Stephenie Drake
-56	Jane Cooper
-67	Calvin Smith
-50	Wayne Moody
-56	Herma Archer
-23	Ramiro Harris
-58	Luz Diaz
-33	Edward Mitchell
-47	Jorge Meyer
-34	Bobby Robinson
-32	Felipe Hughes
-53	Marie Gonzales
-86	Jason Phillips
-38	Treva Moore
-64	David Moore
-89	Betty Nelson
-39	Karen Lee
-77	Brandon Brown
-63	Lindsey Harris
-33	Kasie King
-78	Grace Humphrey
-76	Willie James
-68	Wayne Sullivan
-58	Fred Evans
-67	Pamala Martinez
-26	Lillian Marsh
+26 6 14	Lillian Watson
+39 11 21	Marie Hale
+51 0 1	Shani Mitchell
+42 0 11	Lila Gonzales
+51 10 28	Aaron Davis
+83 8 12	Cheryl Medina
+35 8 1	Darrin Cooper
+28 4 30	Diana Ramirez
+14 7 23	Jason Whitworth
+71 5 8	Jeni Green
+21 4 8	Lonnie Clark
+83 0 28	Hsiu Hughes
+49 11 9	David Taylor
+49 0 29	Zachary Price
+46 6 28	Jane Vega
+76 9 23	Laurence Arevalo
+60 10 21	Marshall Walters
+27 10 30	Pamela Harris
+78 7 15	Rafael Ingram
+52 4 8	Stasia Stewart
+55 1 5	Natasha Collins
+87 5 16	Dexter Yoon
+77 7 27	Martha Martinez
+15 1 22	Annie Dennis
+66 0 12	Lucia Kelley
+81 3 5	Lonnie Orosco
+40 4 21	Erica Bennett
+56 10 18	Mary Thompson
+41 11 4	Ernest Main
+46 5 7	Jeremy Moody
+60 3 6	Norman Shuman
+28 9 19	Richard Walters
+82 0 6	Carl Clark
+18 4 29	Terence White
+38 0 5	Jackie Duong
+37 5 24	Melissa Holland
+25 7 28	Germaine Garcia
+47 10 7	Alycia Peterson
+46 9 25	Catherine Taylor
+65 9 13	Christopher Brockman
+32 10 29	Maryalice Rivera
+55 4 3	Jonathan Johnson
+67 10 22	Sarah Aaron
+81 0 22	Rachel Yoon
+48 8 2	Kimberly Jenkins
+79 10 6	Helen Wright
+90 5 4	Andrea Grantham
+81 6 9	Jacqueline Freeman
+25 4 25	Sharon Wood
+8 7 19	Nicholas Pibbles
+42 3 22	Kevin Buchanan
+66 10 6	Helen Lee
+60 9 2	Jackie Gracia
+87 4 2	Annie Freeman
+31 8 8	Carl Horan
+24 3 13	William Murphy
+76 2 30	Kim Moran
+76 2 18	Patti Wilkins
+16 2 7	Maryalice Dennis
+65 9 21	Christopher Payne
+57 0 19	Karen Morris
+71 1 21	Ramiro McDonald
+66 3 18	Martha Jenkins
+75 10 15	Wayne Moody
+51 1 9	Susan Lewis
+29 5 16	Aaron Hamilton
+40 5 13	Jorge Meyer
+63 3 11	Spencer Marsh
+86 8 22	Jonathan Peterson
+50 5 9	Treva Moore
+20 11 18	Doris Powell
+76 6 16	Clayton Gonzales
+84 6 19	Lindsey Harris
+65 10 7	Anya Price
+66 1 0	Niki Garcia
+90 9 18	Fred Evans
+8 2 23	Jane James
+72 10 5	Spencer Walker
+51 7 0	Fred Henderson
+40 2 12	Deborah Wheeler
+31 6 21	Joe Long
+8 3 21	Felipe Goodrich
+12 2 24	Brandon Hines
+12 3 22	Wayne Bryant
+20 5 16	Tammy Clark
+64 6 21	Dawne Harrison
+8 6 30	Ken Reeves
+55 5 11	Heidi Carvalho
+18 0 16	Marie Harris
+58 7 10	Kim Caraballo
+77 4 29	Martha Walters
+75 5 7	Anna Caraballo
+45 8 23	Grace Sterling
+17 2 3	Michelle Rhodes
+43 7 5	Lila King
+18 10 11	Teresa Evans
+71 5 2	Heidi Caraballo
+49 9 11	Ella Flynn
+11 9 21	Karen Martinez
+59 7 17	Lynn Hardy
+21 7 7	Inez Meyer
+18 7 1	Cecil Henderson
+9 10 19	Ashley Brockman
+44 0 15	Jason Howard
+89 5 2	Howard Mitchell
+25 8 13	Calvin Collins
+29 11 29	Levi Wagner
+50 1 16	Frankie Bryant
+35 5 11	Stasia Flowers
+77 9 27	Roger Flores
+38 7 28	Carl Hernandez
+14 2 12	Willie Johnson
+25 1 8	Alice Simmons
+28 10 20	Jane Yoon
+46 0 11	Darrin Patterson
+30 0 15	Brian Bailey
+19 11 5	Gary Wright
+13 7 5	Jenifer Lopez
+77 9 15	Gordon Taylor
+11 7 24	Calvin Anderson
+51 0 23	Nicholas Harrington
+66 1 6	Lynn Huddleston
+39 8 8	Charles Evans
+79 5 13	Brandon Neal
+10 6 1	Jacqueline Benton
+27 3 25	Aaron Morris
+88 11 12	Edward Johnson
+90 1 9	Shanelle Tackett

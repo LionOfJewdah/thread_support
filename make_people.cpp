@@ -21,19 +21,23 @@
 const auto NFN = FirstNames.size() - 1, NLN = LastNames.size() - 1;
 
 using rand_short = std::uniform_int_distribution<unsigned short>;
+// using rand_byte  = std::uniform_int_distribution<unsigned char>;
 std::default_random_engine UNRG;
-rand_short Randy_Marsh(13, 90), Rick_Sanchez(0, NFN), Morty_Smith(0, NLN);
-rand_short Bojack_Horseman(128, 20000);
-auto Randy  = [&](){ return Randy_Marsh   (UNRG); };
-auto Rick   = [&](){ return Rick_Sanchez  (UNRG); };
-auto Morty  = [&](){ return Morty_Smith   (UNRG); };
-auto Bojack = [&](){ return Bojack_Horseman(UNRG);};
+rand_short Randy_Marsh(8, 90), Rick_Sanchez(0, NFN), Morty_Smith(0, NLN);
+rand_short Bojack_Horseman(128, 20000), Mike_Shindler(0, 11), Aaron_Cote(0, 30);
+auto Randy  = [&](){ return Randy_Marsh   (UNRG); }; // for ages
+auto Rick   = [&](){ return Rick_Sanchez  (UNRG); }; // for first names
+auto Morty  = [&](){ return Morty_Smith   (UNRG); }; // for last names
+auto Bojack = [&](){ return Bojack_Horseman(UNRG);}; // for #people per file
+auto Shindy = [&](){ return Mike_Shindler (UNRG); }; // for age months
+auto Cote   = [&](){ return Aaron_Cote    (UNRG); }; // for age days
 
 const std::string& getFirst() { return FirstNames[Rick()]; }
 const std::string& getLast () { return LastNames [Morty()];}
 
 void writePerson(std::ostream& o = std::cout) {
-    o << Randy() << '\t' << getFirst() << ' ' << getLast() << std::endl;
+    o << Randy() << ' ' << Shindy() << ' ' << Cote()
+        << '\t' << getFirst() << ' ' << getLast() << std::endl;
 }
 
 inline void argError() {
