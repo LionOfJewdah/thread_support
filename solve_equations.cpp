@@ -11,7 +11,6 @@
 //  TODO: make this use my thread_queue!
 //  compile this file with -std=c++14 or higher.
 
-
 #include <iostream>
 #include <fstream>
 #include <vector>
