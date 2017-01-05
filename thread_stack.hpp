@@ -26,21 +26,78 @@ namespace david {
         template <typename T, class Container = std::deque<T> >
         class thread_stack {
         public:
-            using container_type =  Container;
+            using container_type  = Container;
             using value_type =      T;
-            using reference =       value_type&;
+            using reference  =      value_type&;
             using const_reference = const value_type&
-            using size_type =       std::size_t;
+            using pointer    =      std::shared_ptr<T>
+            using size_type  =      std::size_t;
         private:
-            std::mutex mMut;
             container_type mData;
-        public:
-            thread_stack();
-            thread_stack(const thread_stack& ts);
-            thread_stack& operator=(const thread_stack& ts) = delete;
-            ~thread_stack();
-        protected:
+            mutable std::mutex mMut;
 
+        public:
+            //* Default constructor. Constructs empty thread_stack.
+            thread_stack() {};
+
+            /** Copy constructor. Performs deep copy, locking the other stack.
+            *   @param <ts>: thread_stack to be copied from */
+            thread_stack(const thread_stack& ts) {
+                std::lock_guard<std::mutex> lk(ts.mMut);
+                mData = ts.mData;
+            }
+
+            //* Copy assignment is deleted.
+            thread_stack& operator=(const thread_stack& ts) = delete;
+
+            //* Explicitly defaulted destructor; thank you RAII
+            ~thread_stack() = default;
+
+            //* No move assignment or construction.
+
+            /** Push an object to the thread_stack by value.
+            *   @param <val>: value to be pushed to the thread_stack */
+            void push(value_type val) {
+                std::lock_guard<std::mutex> lk(mMut);
+                mData.push_back(std::move_if_noexcept(val));
+            }
+
+            /** thread_queue offers both "try_pop" and "wait_and_pop" functions,
+            *   based on what you want to do. */
+
+            /** void try_pop() overload, taking @param value by
+            *   reference. This value is overwritten with the previous top
+            *   value, which is removed from the queue.
+            *   @throw david::thread::empty_stack exception, if the current
+            *   thread_stack is empty. */
+            void pop(value_type& value) {
+                std::lock_guard<std::mutex> lk(mMut);
+                if (mData.empty()) throw empty_stack();
+                value = mData.back();
+                mData.pop_back();
+            }
+
+            /** try_pop() overload returning std::shared_ptr to previous top
+            *   element, which is removed from the queue.
+            *   @return: shared_ptr to value popped from queue, or the default
+            *   std::shared_ptr (nullptr) if the pop was unsuccessful */
+            pointer try_pop() {
+                std::lock_guard<std::mutex> lk(mMut);
+                if (mData.empty()) throw empty_stack();
+                pointer res(std::make_shared<value_type>(
+                    std::move_if_noexcept(mData.back())
+                ));
+                mData.pop_back();
+                return res;
+            }
+
+            /** @return: whether the current thread_queue is empty */
+            bool empty() const noexcept(
+                noexcept(declval<container_type>().empty()))
+            {
+                std::lock_guard<std::mutex> lk(mMut);
+                return mData.empty();
+            }
         };
     }
 }
