@@ -8,6 +8,10 @@
 //  dividing doubles.
 //  To test my thread_queue
 
+//  TODO: make this use my thread_queue!
+//  compile this file with -std=c++14 or higher.
+
+
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -32,7 +36,10 @@ struct operation {
         ss >> a >> op >> b;
     }
 
-    double operator() const noexcept () {
+    // c++14 is always nice, but only needed to make this function less a
+    // pain in the ass-- in c++11, the body of a constexpr function must always
+    // be a single return statement, using a lot of ternary operators (cond?t:f)
+    constexpr double operator() (void) const noexcept {
         switch (op) {
             case '+':
                 return a + b;
@@ -40,18 +47,18 @@ struct operation {
                 return a - b;
             case '*':
                 return a * b;
-            case: '/':
+            case '/':
                 return a / b;
             default: return 0.0;
         }
     }
 
-    constexpr double evaluate() const noexcept() {
-        return this->operator();
+    constexpr double evaluate() const noexcept {
+        return this->operator()();
     }
 
-    constexpr operator double() const noexcept() {
-        return this->operator();
+    constexpr operator double() const noexcept {
+        return this->operator()();
     }
 
     operation(const operation& rhs) noexcept = default;
@@ -61,7 +68,7 @@ struct operation {
     ~operation() = default;
 };
 
-inline operator<< (std::ostream& o, const operation& Op) {
+inline std::ostream& operator<< (std::ostream& o, const operation& Op) {
     o << Op.a << ' ' << Op.op << ' ' << Op.b;
     return o;
 }
@@ -89,9 +96,9 @@ void init_map(const std::string& inFile) {
 }
 
 std::pair<unsigned, double> pairwise_eval(const typename
-    decltype(Equations())::value_type& pear)
+    std::remove_reference_t<decltype(Equations())>::value_type& pear)
 {
-    return std::pair(std::piecewise_construct, pear.first, pear.second());
+    return std::pair<unsigned, double> (pear.first, pear.second());
 }
 
 std::map<unsigned, double>& Solutions() {
@@ -102,7 +109,7 @@ std::map<unsigned, double>& Solutions() {
 std::mutex map_mutex;
 void solve(unsigned i) {
     std::lock_guard<std::mutex> lk(map_mutex);
-    Solutions().insert(pairwise_eval(Equations()[i]));
+    Solutions().insert(pairwise_eval(*Equations().find(i)));
 }
 
 void print_map(std::ostream& o = std::cout) {
@@ -149,7 +156,7 @@ int main(int argc, char* argv[])
     unsigned block_last = per_block;
     std::vector<std::thread> vthread; vthread.reserve(num_threads);
     for (unsigned b = 0; b < num_threads; ++b) {
-        vthread.emplace_back(solve_range(first, block_last, numEqns));
+        vthread.emplace_back(solve_range, first, block_last, numEqns);
         first = block_last;
         block_last += per_block;
     }
