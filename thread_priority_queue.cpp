@@ -75,7 +75,10 @@ thread_priority_queue<Person> People_Queue;
 
 inline void read_n_people(std::istream& ifs) {
     int N, x = 0;
+    std::cout << "0x" << std::hex << std::this_thread::get_id() << ": " << std::dec << std::flush;
+    // volatile int a;
     ifs >> N;
+    std::cout << N << '\n';
     std::string curr, name, name2;
     unsigned short age, mo, dy;
     while (std::getline(ifs, curr) && x < N) {
@@ -86,6 +89,7 @@ inline void read_n_people(std::istream& ifs) {
 }
 
 bool pread_n_people(std::istream* piss) {
+    if (!piss /*|| piss->fail()*/) return false;
     read_n_people(*piss);
     return true;
 }
@@ -135,7 +139,10 @@ int main(int argc, char* argv[])
             }
         }
     }
-    // for (auto&& th: inputs) th.join();
-    std::cout << "Exiting." << std::endl;
+    std::vector<bool> success (N); unsigned i = 0;
+    for (auto&& th: success) th = inputs[i++].get();
+    std::cout << "Exiting. Sucesses:" << std::endl;
+    for (const auto& th: success) std::cout << std::boolalpha << th << ' ';
+    std::endl(std::cout);
     return 0;
 }
