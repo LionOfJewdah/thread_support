@@ -122,3 +122,5 @@ Equations: generate_math.out
 	-@$(BIN_DIR)/$< $(CLARGS)
 Solve: 		 solve_equations.out $(OUT_DIR)/.dirstamp
 	-@$(BIN_DIR)/$< $(CLARGS)
+People: 	 make_people.out
+	-@$(BIN_DIR)/$< $(CLARGS)
