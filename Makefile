@@ -35,7 +35,7 @@ THREADING     = -pthread
 ####### Output directory
 
 BIN_DIR   	  = .
-TEST_DIR	  = tests
+TEST_DIR	  	= tests
 TARGET        = elHol_rloWrd.out
 
 ####### Files

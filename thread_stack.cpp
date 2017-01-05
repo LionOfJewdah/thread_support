@@ -4,7 +4,7 @@
 //
 //  Created by David Paul Silverstone on Wed, Jan 4th, 2017.
 //
-//
+//  Test of my thread_stack 
 
 #include "thread_stack.hpp"
 
