@@ -36,16 +36,20 @@ THREADING     = -pthread
 
 BIN_DIR   	  = .
 TEST_DIR	  	= tests
+OUT_DIR				= output
+RES_DIR				= resources
 TARGET        = elHol_rloWrd.out
 
 ####### Files
 
-SOURCES     = elHol_rloWrd.cpp
+SOURCES       = elHol_rloWrd.cpp thread_stack.cpp thread_queue.cpp
 
-HEADERS		  =
+HEADERS		    = structs_fwd.hpp thread_queue.hpp thread_stack.hpp
 
-TEST_SOURCES =
-EXECS		  	= elHol_rloWrd.out
+TEXT_FILES    = $(RES_DIR)/kesha.txt $(RES_DIR)/row_your_boat.txt
+
+TEST_SOURCES  =
+EXECS		  		= elHol_rloWrd.out thread_queue.out thread_stack.out
 
 first: all
 ####### Implicit rules
@@ -67,12 +71,20 @@ first: all
 .c.o:
 	$(CC) -c $(CFLAGS) $(INCPATH) -o "$@" "$<"
 
+.o.out:
+	$(LINK) $< $(THREADING) $(LFLAGS) -o $(BIN_DIR)/$@
 ####### Build rules
 
 all: $(TARGET)
 	-@$(BIN_DIR)/$(TARGET)
 
+thread_queue.o: thread_queue.cpp structs_fwd.hpp thread_queue.hpp
+thread_stack.o: thread_stack.cpp structs_fwd.hpp thread_stack.hpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o "$@" "$<"
+
 elHol_rloWrd.out: elHol_rloWrd.o $(BIN_DIR)/.dirstamp
+thread_queue.out: thread_queue.o $(BIN_DIR)/.dirstamp #$(TEXT_FILES)
+thread_stack.out: thread_stack.o $(BIN_DIR)/.dirstamp #$(TEXT_FILES)
 	$(LINK) $< $(THREADING) $(LFLAGS) $(CLARGS) -o $(BIN_DIR)/$@
 
 clean:
@@ -86,7 +98,15 @@ $(TEST_DIR)/.dirstamp:
 	-@mkdir -p $(TEST_DIR)
 	-@touch $@
 
-demonstrate: $(TARGET)
+$(RES_DIR)/.dirstamp:
+	-@mkdir -p $(RES_DIR)
+	-@touch $@
+
+$(OUT_DIR)/.dirstamp:
+	-@mkdir -p $(OUT_DIR)
+	-@touch $@
+
+demonstrate: elHol_rloWrd.out
 	-@for var in `seq 1 20`; do \
 			$(BIN_DIR)/$(TARGET); \
 	done
