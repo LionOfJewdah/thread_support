@@ -81,6 +81,9 @@ all: $(TARGET)
 thread_queue.o: thread_queue.cpp structs_fwd.hpp thread_queue.hpp
 thread_stack.o: thread_stack.cpp structs_fwd.hpp thread_stack.hpp
 
+solve_equations.o: solve_equations.cpp structs_fwd.hpp thread_queue.hpp
+		$(CXX) -c $(CXXFLAGS) -std=c++14 $(THREADING) $(INCPATH) -o "$@" "$<"
+
 elHol_rloWrd.out: elHol_rloWrd.o $(BIN_DIR)/.dirstamp
 thread_queue.out: thread_queue.o $(BIN_DIR)/.dirstamp #$(TEXT_FILES)
 thread_stack.out: thread_stack.o $(BIN_DIR)/.dirstamp #$(TEXT_FILES)
