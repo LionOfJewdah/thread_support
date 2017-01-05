@@ -14,8 +14,9 @@
 #include <string>
 #include <vector>
 
-std::vector<std::string> FirstNames;
-std::vector<std::string> LastNames;
+// declare vectors of first and last names. Take up space
+#include "resources/names_f.txt"
+#include "resources/names_l.txt"
 
 constexpr auto NFN = FirstNames.size() - 1, NLN = LastNames.size() - 1;
 
