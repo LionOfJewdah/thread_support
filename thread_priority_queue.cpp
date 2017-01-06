@@ -73,15 +73,17 @@ inline std::ostream& operator<< (std::ostream& o, const Person& p) {
 
 thread_priority_queue<Person> People_Queue;
 
+unsigned countIn = 0;
+
 inline void read_n_people(std::istream& ifs) {
     int N, x = 0;
-    std::cout << "0x" << std::hex << std::this_thread::get_id() << ": " << std::dec << std::flush;
-    // volatile int a;
-    ifs >> N;
+    std::cout << "0x" << std::hex << std::this_thread::get_id() << ": "
+        << std::dec << std::flush;
+    ifs >> N; countIn += N;
     std::cout << N << '\n';
     std::string curr, name, name2;
     unsigned short age, mo, dy;
-    while (std::getline(ifs, curr) && x < N) {
+    while (std::getline(ifs, curr) && x++ <= N) {
         std::stringstream ss(curr);
         ss >> age >> mo >> dy >> name >> name2;
         People_Queue.emplace(age, mo, dy, std::move(name + " " + name2));
@@ -113,7 +115,7 @@ int main(int argc, char* argv[])
         error();
         return 2;
     }
-    
+
     std::vector<std::ifstream> files (&argv[3], &argv[N + 3]); //[first, last)
     std::vector<std::thread> inputs (N);
     for (unsigned x = 0; x < N; ++x) {
@@ -141,6 +143,7 @@ int main(int argc, char* argv[])
     }
     // std::vector<bool> success (N); unsigned i = 0;
     for (auto&& th: inputs) th.join();
+    std::cout << "Received " << countIn << " objects. " << std::endl;
     std::cout << "Exiting." << std::endl;
     return 0;
 }
