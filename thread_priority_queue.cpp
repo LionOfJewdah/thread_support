@@ -95,9 +95,9 @@ bool pread_n_people(std::istream* piss) {
 }
 
 inline void error() {
-    std::cerr << "Usage: ./age_sort <output> <num> {files}:\n"
-        << "output "
+    std::cerr << "Usage: ./age_sort <num> <output> {files}:\n"
         << "<num> is a number 1-31 of files to read names and ages from.\n"
+        << "<output> is a file to write results to.\n"
         << "{files} is a list of <num> files to use as inputs.\n";
 }
 
@@ -113,10 +113,11 @@ int main(int argc, char* argv[])
         error();
         return 2;
     }
-    std::vector<std::ifstream> files (&argv[3], &argv[N + 2]);
-    std::vector<std::future<bool> > inputs (N);
+    
+    std::vector<std::ifstream> files (&argv[3], &argv[N + 3]); //[first, last)
+    std::vector<std::thread> inputs (N);
     for (unsigned x = 0; x < N; ++x) {
-        inputs[x] = std::async(std::launch::async,pread_n_people, &files[x]);
+        inputs[x] = std::thread(pread_n_people, &files[x]);
     }
     std::ofstream output(argv[2]);
     // begin processing the priority queue in the main thread
@@ -125,9 +126,8 @@ int main(int argc, char* argv[])
     Person p;
     while (!done) {
         got = People_Queue.wait_for_and_pop(p, std::chrono::milliseconds(10));
-        done = std::all_of(inputs.begin(), inputs.end(), [](auto&& x) {
-            return x.wait_for(std::chrono::microseconds(50)) //might be too much
-                    == std::future_status::ready;
+        done = std::none_of(inputs.begin(), inputs.end(), [](auto&& x) {
+            return x.joinable();
         });
         if (got) {
             output << p << std::endl;
@@ -139,10 +139,8 @@ int main(int argc, char* argv[])
             }
         }
     }
-    std::vector<bool> success (N); unsigned i = 0;
-    for (auto&& th: success) th = inputs[i++].get();
-    std::cout << "Exiting. Sucesses:" << std::endl;
-    for (const auto& th: success) std::cout << std::boolalpha << th << ' ';
-    std::endl(std::cout);
+    // std::vector<bool> success (N); unsigned i = 0;
+    for (auto&& th: inputs) th.join();
+    std::cout << "Exiting." << std::endl;
     return 0;
 }
