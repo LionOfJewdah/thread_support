@@ -1,8 +1,9 @@
 # thread_support
-Thread-safe data structures and algorithms in the C++ language.
-Largely based on the examples and reasoning in Anthony Williams' guide book, "C++ Concurrency in Action"
+This is my sandbox repo for learning-by-implementing thread-safe data structures and algorithms in the C++ language.
 
-Please make good use of these demonstrations :). I am a student, but I hope you'll find these data structures, applications and explanations instructive and/or helpful.
+The content here is largely based on the examples and reasoning in Anthony Williams' guide book, "C++ Concurrency in Action", but also my own knowledge of data structures and multi-threading.
+
+Please make good use of these demonstrations :). I am a student, but I hope you'll find these data structures, applications and explanations instructive and/or helpful. I also hope they will demonstrate my eagerness to learn and build efficient and effective multithreaded software systems!
 
 
 
